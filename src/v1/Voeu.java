@@ -1,6 +1,8 @@
 
 package v1;
 
+import v1.agent.Fournisseur;
+
 /**
  *
  * @author Ophélie
@@ -11,15 +13,21 @@ public class Voeu extends Service {
     
     private int id;
     private boolean traite;
+    private Proposition proposition;
+    private Fournisseur fournisseur;
 
-    public Voeu() {
+    public Voeu(String type, String arrivee, String depart, int dateDepart, int dateArrivee,float prixDepart, float tarifMaximum) {
+        super();
         this.id = cpt++;
+        this.dateDepart = dateDepart;
+        this.dateArrivee = dateArrivee;
+        this.arrivee = arrivee;
+        this.depart = depart;
+        this.type = type;
+        this.prixDepart = prixDepart;
+        this.prix = prixDepart;
+        this.tarifMaximum = tarifMaximum;
     }
-    
-//    public Voeu(Service service) {
-//        super(service);
-//        this.id = cpt++;
-//    }
 
     public boolean isTraite() {
         return traite;
@@ -27,6 +35,22 @@ public class Voeu extends Service {
 
     public void setTraite(boolean traite) {
         this.traite = traite;
+    }
+
+    public Proposition getProposition() {
+        return proposition;
+    }
+
+    public void setProposition(Proposition proposition) {
+        this.proposition = proposition;
+    }
+
+    public Fournisseur getFournisseur() {
+        return fournisseur;
+    }
+
+    public void setFournisseur(Fournisseur fournisseur) {
+        this.fournisseur = fournisseur;
     }
 
     @Override

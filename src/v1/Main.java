@@ -5,8 +5,6 @@ import v1.agent.Negociateur;
 import v1.agent.Fournisseur;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import v1.view.Dialog;
 
 /**
  *
@@ -61,20 +59,10 @@ public class Main {
     {
         List<Voeu> voeux = new ArrayList();
         
-        Voeu v1 = new Voeu();
-        v1.setDateDepart(12);
-        v1.setDateArrivee(14);
-        v1.setDepart("Lyon");
-        v1.setArrivee("Paris");
-        v1.setType(Service.BILLET_TRAIN);
+        Voeu v1 = new Voeu(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 14, 5, 20);
         voeux.add(v1);
         
-        Voeu v2 = new Voeu();
-        v2.setDateDepart(12);
-        v2.setDateArrivee(15);
-        v2.setDepart("Lyon");
-        v2.setArrivee("Paris");
-        v2.setType(Service.BILLET_AVION);
+        Voeu v2 = new Voeu(Service.BILLET_AVION, "Lyon", "Paris", 12, 14, 15, 50);
         voeux.add(v2);
         
 //        Voeu v3 = new Voeu();
@@ -95,13 +83,7 @@ public class Main {
     {
         List<Proposition> propositions = new ArrayList();
         
-        Proposition p1 = new Proposition();
-        p1.setDateDepart(12);
-        p1.setDateArrivee(14);
-        p1.setDepart("Lyon");
-        p1.setArrivee("Paris");
-        p1.setType(Service.BILLET_TRAIN);
-        p1.setTarifMinimal(10);
+        Proposition p1 = new Proposition(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 14, 20, 10);
         propositions.add(p1);
         
 //        Proposition p2 = new Proposition();

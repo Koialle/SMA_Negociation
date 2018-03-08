@@ -30,22 +30,13 @@ public abstract class Service {
     protected int dateButoire; // Service: Date de ventre|achat au plus tard, Contrainte Fournisseur|Negociateur
     protected int dateMVS; // Service: Date de Mise en Vente Souhaitée, Préférence Fournisseur
     protected List<Fournisseur> fournisseursPreferes; // Service: Préférences Negociateur
-    protected int frequence; // Service: Nb propositions dans une négociation, Paramètre stratégique Négociateur
+    protected int frequence = 6; // Service: Nb propositions dans une négociation, Paramètre stratégique Négociateur
     protected String typeCroissance = CROISSANCE_LINEAIRE; // Service: Stratégie de croissance, Paramètre stratégique Négociateur
     protected float croissance; // Service: < %10 par itération, Paramètre stratégique Négociateur
 
     public Service(){
         this.fournisseursPreferes = new ArrayList();
-        
     }
-    
-//    public Service(Service service) {
-//        this();
-//        this.dateDepart = service.dateDepart;
-//        this.dateArrivee = service.dateArrivee;
-//        this.arrivee = service.arrivee;
-//        this.depart = service.depart;
-//    }
 
     public int getId() {
         return id;

@@ -5,10 +5,8 @@
  */
 package v1.agent;
 
-import sma.Agent;
 import java.util.ArrayList;
 import java.util.List;
-import sma.Message;
 import v1.MessageNegociation;
 import v1.Negociation;
 import v1.Proposition;
@@ -59,15 +57,16 @@ public class Fournisseur extends AgentNegociation {
             }
         }
     }
-    
+
     private void reponseAppelOffre(boolean ok, Negociation negociation) {
         MessageNegociation reponse;
-        
+
         if (ok) {
             reponse = new MessageNegociation(MessageNegociation.PERFORMATIF_APPEL_OFFRE, MessageNegociation.ACTION_ACCEPTED_OFFRE);
         } else {
             reponse = new MessageNegociation(MessageNegociation.PERFORMATIF_APPEL_OFFRE, MessageNegociation.ACTION_REFUSED_OFFRE);
         }
+
         reponse.setEmetteur(this);
         reponse.setDestinataire(negociation.getNegociateur());
         reponse.setNegociation(negociation);

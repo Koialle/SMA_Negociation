@@ -15,9 +15,10 @@ import v1.agent.AgentNegociation;
 public class MessageNegociation extends Message {
     public static final String PERFORMATIF_APPEL_OFFRE = "Appel_offre";
     public static final String PERFORMATIF_PROPOSITION = "Proposition";
-    public static final String PERFORMATIF_CONTRE_PROPOSITION = "Contre_proposition";
 
     public static final String ACTION_REQUEST = "Request";
+    public static final String ACTION_PRIX_NEGOCIATEUR = "Prix_Négociateur";
+    public static final String ACTION_PRIX_FOURNISSEUR = "Prix_Fournisseur";
     public static final String ACTION_REFUSED_NEGOCIATION = "Refused_negociation";
     public static final String ACTION_ACCEPTED_NEGOCIATION = "Accepted_negociation";
     public static final String ACTION_REFUSED_OFFRE = "Refused_offre";

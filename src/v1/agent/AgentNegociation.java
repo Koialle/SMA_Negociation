@@ -2,7 +2,6 @@
 package v1.agent;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import sma.Agent;
 import sma.Message;
@@ -17,7 +16,6 @@ import v1.view.Dialog;
 public abstract class AgentNegociation extends Agent {
     protected Map<Integer, Negociation> negociations;
     protected Dialog dialogView;
-    //protected String name;
     protected int id;
     
     /**
@@ -29,14 +27,6 @@ public abstract class AgentNegociation extends Agent {
         this.negociations = new HashMap<>();
         this.id = id;
     }
-    
-//    public String getNameAgent() {
-//        return name;
-//    }
-//
-//    public void setNameAgent(String name) {
-//        this.name = name;
-//    }
 
     public int getIdAgent() {
         return id;
@@ -58,23 +48,36 @@ public abstract class AgentNegociation extends Agent {
         }
     }
     
-//    protected Negociation getNegociationByVoeu(Voeu voeu) {
-//        for (Negociation negociation: negociations) {
-//            if (voeu.equals(negociation.getVoeu())) {
-//                return negociation;
-//            }
-//        }
-//
-//        return null;
-//    }
-//
-//    protected Negociation getNegociationByProposition(Proposition proposition) {
-//        for (Negociation negociation: negociations) {
-//            if (proposition.equals(negociation.getProposition())) {
-//                return negociation;
-//            }
-//        }
-//
-//        return null;
-//    }
+    protected void reponsePropositionPrix(float prix, AgentNegociation emetteur, AgentNegociation destinataire, Negociation negociation) {
+        MessageNegociation message;
+        if (emetteur instanceof Negociateur) {
+            message = new MessageNegociation(MessageNegociation.PERFORMATIF_PROPOSITION, MessageNegociation.ACTION_PRIX_NEGOCIATEUR);
+        } else {
+            message = new MessageNegociation(MessageNegociation.PERFORMATIF_PROPOSITION, MessageNegociation.ACTION_PRIX_FOURNISSEUR);
+        }
+
+        message.setEmetteur(emetteur);
+        message.setDestinataire(destinataire);
+        message.setNegociation(negociation);
+
+        negociation.getVoeu().setPrix(prix);
+        negociation.incrementeNbEchanges();
+
+        sendMessage(message);
+    }
+    
+    protected void reponseProposition(boolean ok, AgentNegociation destinataire, Negociation negociation) {
+        MessageNegociation reponse;
+
+        if (ok) {
+            reponse = new MessageNegociation(MessageNegociation.PERFORMATIF_PROPOSITION, MessageNegociation.ACTION_ACCEPTED_NEGOCIATION);
+        } else {
+            reponse = new MessageNegociation(MessageNegociation.PERFORMATIF_PROPOSITION, MessageNegociation.ACTION_REFUSED_NEGOCIATION);
+        }
+        reponse.setEmetteur(this);
+        reponse.setDestinataire(destinataire);
+        reponse.setNegociation(negociation);
+
+        sendMessage(reponse);
+    }
 }
