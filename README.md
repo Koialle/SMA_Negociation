@@ -1,2 +1,2 @@
-# SMA_Taquin
-Implémentation de la résolution d'un Taquin avec des agents cognitifs
+# SMA_Negociation
+Projet Polytech 5A - Négociation au sein d'un Système Multi-Agent
