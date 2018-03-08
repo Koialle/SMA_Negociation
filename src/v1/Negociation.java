@@ -15,8 +15,7 @@ public class Negociation {
     private Fournisseur fournisseur;
     private Voeu voeu;
     private Proposition proposition;
-    private int step; // step 0 = appel d'offre broadcast
-    private boolean refused = false;
+    private boolean refused = false; //@TODO Etat REFUSED/ACCEPTED
     private boolean accepted = false;
 
     public Negociation(Negociateur negociateur, Fournisseur fournisseur, Voeu voeu) {
@@ -25,7 +24,6 @@ public class Negociation {
         this.negociateur = negociateur;
         this.fournisseur = fournisseur;
         this.voeu = voeu;
-        this.step = 0;
     }
 
     public int getNombreEchanges() {
@@ -76,14 +74,6 @@ public class Negociation {
         this.proposition = proposition;
     }
 
-    public int getStep() {
-        return step;
-    }
-
-    public void setStep(int step) {
-        this.step = step;
-    }
-
     public boolean isRefused() {
         return refused;
     }
@@ -102,7 +92,7 @@ public class Negociation {
         if (accepted) {
             voeu.setProposition(proposition);
             voeu.setFournisseur(fournisseur);
-            
+            voeu.setEtat(Voeu.Etat.TERMINE);
             // Faut-il aussi rattacher le voeu à la proposition ? Relation de 1-1 entre voeu et proposition
         }
     }

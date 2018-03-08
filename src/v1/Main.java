@@ -60,6 +60,9 @@ public class Main {
         List<Voeu> voeux = new ArrayList();
         
         Voeu v1 = new Voeu(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 14, 5, 20);
+        v1.setFrequence(10);
+        v1.setTypeCroissance(Voeu.CROISSANCE_LINEAIRE);
+        v1.setCroissance(1);
         voeux.add(v1);
         
         Voeu v2 = new Voeu(Service.BILLET_AVION, "Lyon", "Paris", 12, 14, 15, 50);
@@ -85,7 +88,7 @@ public class Main {
         
         Proposition p1 = new Proposition(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 14, 20, 10);
         propositions.add(p1);
-        
+
 //        Proposition p2 = new Proposition();
 //        p2.setDateDepart(10);
 //        p2.setDateArrivee(21);

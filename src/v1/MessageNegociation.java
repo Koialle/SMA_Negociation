@@ -19,8 +19,8 @@ public class MessageNegociation extends Message {
     public static final String ACTION_REQUEST = "Request";
     public static final String ACTION_PRIX_NEGOCIATEUR = "Prix_Négociateur";
     public static final String ACTION_PRIX_FOURNISSEUR = "Prix_Fournisseur";
-    public static final String ACTION_REFUSED_NEGOCIATION = "Refused_negociation";
-    public static final String ACTION_ACCEPTED_NEGOCIATION = "Accepted_negociation";
+    public static final String ACTION_REFUSED_NEGOCIATION = "Refused_negociation"; // Proposition
+    public static final String ACTION_ACCEPTED_NEGOCIATION = "Accepted_negociation"; // Proposition
     public static final String ACTION_REFUSED_OFFRE = "Refused_offre";
     public static final String ACTION_ACCEPTED_OFFRE = "Accepted_offre";
     
@@ -60,22 +60,37 @@ public class MessageNegociation extends Message {
 
     @Override
     public String toString() {
-        String message = "";
+        String message = "Negociation n°" + negociation.getIdentifiantNegociation();
         if (performatif.equals(MessageNegociation.PERFORMATIF_APPEL_OFFRE)) {
             if (action.equals(MessageNegociation.ACTION_REQUEST)) {
-                message += "Requète d'appel d'offre\n";
-                if (this.negociation.getVoeu() != null) {
-                    Voeu voeu = this.negociation.getVoeu();
-                    message += "Demande :\n" + voeu.toString();
+                message += "\nRequète d'appel d'offre\n";
+                if (negociation.getVoeu() != null) {
+                    message += "Demande :\n" + negociation.getVoeu().toString();
                 }
             } else {
-                message += "Appel d'offre : " + action;
+                message += "\nAppel d'offre : " + action;
             }
-        } else {
-            message += this.performatif + " - " + this.action;
-            if (this.negociation.getProposition() != null) {
-                Proposition proposition = this.negociation.getProposition();
-                message += "Proposition:\n" + proposition.toString();
+        } else if (performatif.equals(MessageNegociation.PERFORMATIF_PROPOSITION)) {
+            if (negociation.getNombreEchanges() > 0) message += "\nOccurence: " + negociation.getNombreEchanges();
+            switch (action) {
+                case ACTION_PRIX_FOURNISSEUR:
+                    if (negociation.getProposition() != null) {
+                        message += "\nProposition: \n" + negociation.getProposition();
+                    }
+                    break;
+                case ACTION_PRIX_NEGOCIATEUR:
+                    if (negociation.getVoeu()!= null) {
+                        message += "\nVoeu: \n" + negociation.getVoeu();
+                    }
+                    break;
+                default:
+                    message += "\n" + this.performatif + " - " + this.action;
+                    if (negociation.getProposition() != null) {
+                        message += "\nProposition fournisseur: " + negociation.getProposition().getPrix();
+                    }
+                    if (negociation.getVoeu()!= null) {
+                        message += "\nProposition negociateur: " + negociation.getVoeu().getPrix();
+                    }
             }
         }
         

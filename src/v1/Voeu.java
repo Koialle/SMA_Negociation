@@ -10,9 +10,15 @@ import v1.agent.Fournisseur;
  */
 public class Voeu extends Service {
     private static int cpt = 0;
-    
+
+    public enum Etat {
+        NON_TRAITE,
+        TRAITE,
+        TERMINE
+    }
+
     private int id;
-    private boolean traite;
+    private Etat etat = Etat.NON_TRAITE;
     private Proposition proposition;
     private Fournisseur fournisseur;
 
@@ -25,16 +31,15 @@ public class Voeu extends Service {
         this.depart = depart;
         this.type = type;
         this.prixDepart = prixDepart;
-        this.prix = prixDepart;
         this.tarifMaximum = tarifMaximum;
     }
 
-    public boolean isTraite() {
-        return traite;
+    public Etat getEtat() {
+        return etat;
     }
 
-    public void setTraite(boolean traite) {
-        this.traite = traite;
+    public void setEtat(Etat etat) {
+        this.etat = etat;
     }
 
     public Proposition getProposition() {

@@ -43,8 +43,7 @@ public abstract class AgentNegociation extends Agent {
             AgentNegociation destinataire = (AgentNegociation) message.getDestinataire();
             AgentNegociation emetteur = (AgentNegociation) message.getEmetteur();
             destinataire.addMessage(message);
-            destinataire.dialogView.addDialogLine(destinataire.getName(), "Reçu message: \n"+message.toString());
-            emetteur.dialogView.addDialogLine(emetteur.getName(), "Envoi du message: \n"+message.toString());
+            emetteur.dialogView.addDialogLine(emetteur.getName(), "Envoi du message: \n" + message.toString());
         }
     }
     

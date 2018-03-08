@@ -164,9 +164,9 @@ public abstract class Service {
 
     public void setCroissance(float croissance) {
         if (croissance > 0) {
-            if (croissance > 10) {
-                this.croissance = 10;
-                System.err.printf("Le taux ne croissance (%.2f) ne peut pas être supérieur à 10%\n", croissance);
+            if (croissance > 1) {
+                this.croissance = 1;
+                System.err.printf("Le taux ne croissance (%.2f) ne peut pas être supérieur à 100%, soit 1.\n", croissance);
             } else {
                 this.croissance = croissance;
             }
