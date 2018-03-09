@@ -34,8 +34,14 @@ public class Fournisseur extends Agent {
     }
 
     @Override
-    public void runAgent() {        
-        checkAllMessages();
+    public void runAgent() {
+        // Affichage des offres disponibles du fournisseur
+        dialogView.addDialogLine(getName(), "Propositions disponibles:");
+        for (Proposition proposition: propositions) {
+            dialogView.addDialogLine(getName(), proposition.toString());
+        }
+
+        // Début interaction
         while (propositions.size() > 0 || getMessages().size() > 0) { // while (true)
             checkAllMessages();
         }
@@ -49,21 +55,25 @@ public class Fournisseur extends Agent {
             Performatif performatif = (Performatif) message.getPerformatif();
             Action action = (Action) message.getAction();
             Negociation negociation = message.getNegociation();
-            dialogView.addDialogLine(getName(), "Reçu message: \n" + message.toString());
+            displayMessageReçu(message);
 
             // Appel d'offre
             if (performatif == Performatif.APPEL_OFFRE && action == Action.SOUMISSION) {
-                dialogView.addDialogLine(getName(), "Traitement de l'appel d'offre");
                 List<Proposition> listePropositions = getPropositionsPossibles(negociation.getVoeu());
-                dialogView.addDialogLine(getName(), String.format("%d offres trouvées", listePropositions.size()));
-
-                reponseAppelOffre(listePropositions.size() > 0, negociation);
+                String nbOffres = String.format("%d offres trouvées", listePropositions.size());
+                if (listePropositions.size() > 0) {
+                    envoieAccordProposition(negociation.getNegociateur(), negociation, nbOffres);
+                } else {
+                    envoieRefusProposition(negociation.getNegociateur(), negociation, nbOffres);
+                }
             } else if (performatif == Performatif.PROPOSITION) {
                 switch (action) {
                     case SOUMISSION:
                         float prixNegociateur = negociation.getVoeu().getPrix();
                         Proposition proposition = negociation.getProposition();
-                        if (proposition == null) { // Première proposition
+                        
+                        // Choix de la proposition à lier à la néociation (étape = 4)
+                        if (proposition == null) {
                             List<Proposition> listePropositions = getPropositionsPossibles(negociation.getVoeu());
 
                             if (!listePropositions.isEmpty()) {
@@ -83,43 +93,52 @@ public class Fournisseur extends Agent {
                             }
                         }
 
+                        // Traitement de la proposition (étape > 4)
                         if (proposition == null) {
-                            reponseProposition(false, negociation.getNegociateur(), negociation);
+                            envoieRefusPrix(negociation.getNegociateur(), negociation, "Plus d'offres de disponibles pour ce service");
                         } else {
-                            // Pas de stratégie de croissance
                             negociation.setProposition(proposition);
-                            if (prixNegociateur > proposition.getTarifMinimal()) {
-                                proposition.setPrix(prixNegociateur);
-                                reponseProposition(true, negociation.getNegociateur(), negociation);
+                            if (prixNegociateur < proposition.getTarifMinimal()) { // Refus car tarif minimal pas respecté
+                                envoieRefusPrix(negociation.getNegociateur(), negociation, "Tarif minimal dépassé");
                             } else {
-                                reponseProposition(false, negociation.getNegociateur(), negociation);
+                                float nouveauPrixFournisseur = proposition.getPrix() - proposition.getPrix() * (float) 0.2;
+                                String accord;
+                                if (prixNegociateur > nouveauPrixFournisseur) {
+                                    nouveauPrixFournisseur = prixNegociateur;
+                                    accord = "Prix du négociateur accepté";
+                                } else {
+                                    accord = String.format("%.2f à la baisse avec taux de %.2f %\nRemarque: Taux en dur pour le fournisseur", proposition.getPrix(), 0.2 * 100);
+                                }
+                                envoieNouveauPrix(nouveauPrixFournisseur, negociation.getNegociateur(), negociation, accord);
                             }
                         }
                         break;
-                    case REFUS:
-                        negociation.setRefused(true);
-                        dialogView.addDialogLine(getName(), String.format("Refus de la négociation avec %s", message.getEmetteur().getName()));
-                        break;
-                    case ACCEPTATION:
-                        //@TODO
-                        dialogView.addDialogLine(getName(), String.format("Acceptation de %s", message.getEmetteur().getName()));
+//                    case REFUS:
+//                        //@TODO gérer fon négociation
+//                        negociation.setRefused(true);
+//                        dialogView.addDialogLine(getName(), String.format("Refus de la négociation avec %s", message.getEmetteur().getName()));
+//                        break;
+//                    case ACCEPTATION:
+//                        //@TODO gérer fon négociation
+//                        dialogView.addDialogLine(getName(), String.format("Acceptation de %s", message.getEmetteur().getName()));
+//                    case ACCEPTATION:
+//                        negociation.setAccepted(true);
+//                        dialogView.addDialogLine(getName(), String.format("Accord de la négociation %d entre %s et %s", negociation.getId(), getName(), negociation.getFournisseur().getName()));
+//                        break;
+//                    case REFUS:
+//                        if (negociation.getProposition() != null) {
+//                            reponsePrixNegociateur(negociation);
+//                        } else {
+//                            negociation.setRefused(true);
+//                            dialogView.addDialogLine(getName(), String.format("Refus de la négociation avec %s", message.getEmetteur().getName()));
+//                        }   break;
+                    default:
+                        System.out.println(getName() + ": reçu " + action);
                 }
             }
         }
     }
 
-    private void reponseAppelOffre(boolean ok, Negociation negociation) {
-        Message reponse = new Message(Message.Type.APPEL_OFFRE, this, negociation.getNegociateur(), negociation);
-
-        if (ok) {
-            reponse.setAction(Action.ACCEPTATION);
-        } else {
-            reponse.setAction(Action.REFUS);
-        }
-
-        sendMessage(reponse);
-    }
-    
     public void addProposition(Proposition proposition) {
         this.propositions.add(proposition);
     }

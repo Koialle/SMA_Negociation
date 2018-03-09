@@ -11,6 +11,8 @@ import v1.agent.Fournisseur;
  * @author Mélanie DUBREUIL
  */
 public abstract class Service {
+    protected static int cpt = 0;
+
     public static String BILLET_AVION = "Avion";
     public static String BILLET_TRAIN = "Train";
     
@@ -188,7 +190,7 @@ public abstract class Service {
         if (dateArrivee != 0) message += "\n\tDate arrivée : " + dateArrivee;
         if (prix != 0) message += "\n\tPrix : " + prix;
         
-        message += "\nService :";
+        message += "\nService (privé):";
         if (prixDepart != 0) message += "\n\tPrix depart (N) : " + prixDepart;
         if (tarifMinimal != 0) message += "\n\tTarif minimal (F) : " + tarifMinimal;
         if (tarifMaximum != 0) message += "\n\tTarif maximal (N) : " + tarifMaximum;

@@ -39,46 +39,105 @@ public abstract class Agent extends sma.Agent {
     @Override
     protected void sendMessage(sma.Message message) {
         if (message instanceof Message) {
-            message = (Message) message;
+            ((Message) message).getNegociation().incrementeStep();
             Agent destinataire = (Agent) message.getDestinataire();
-            Agent emetteur = (Agent) message.getEmetteur();
             destinataire.addMessage(message);
-            emetteur.dialogView.addDialogLine(emetteur.getName(), "Envoi du message: \n" + message.toString());
+            displayMessageEnvoye(message);
         }
     }
     
-    /**
-     * Soumission d'un nouveau prix.
-     *
-     * @param prix
-     * @param emetteur
-     * @param destinataire
-     * @param negociation 
-     */
-    protected void reponsePropositionPrix(float prix, Agent emetteur, Agent destinataire, Negociation negociation) {
-        Message message = new Message(Message.Type.PROPOSITION_PRIX, emetteur, destinataire, negociation);
-        negociation.getVoeu().setPrix(prix);
-        negociation.incrementeNbEchanges();
+//    /**
+//     * Soumission d'un nouveau prix.
+//     *
+//     * @param prix
+//     * @param emetteur
+//     * @param destinataire
+//     * @param negociation 
+//     */
+//    protected void reponsePropositionPrix(float prix, Agent emetteur, Agent destinataire, Negociation negociation) {
+//        Message message = new Message(Message.Type.PROPOSITION_PRIX, emetteur, destinataire, negociation);
+//        negociation.getVoeu().setPrix(prix);
+//        negociation.incrementeNbEchanges();
+//
+//        sendMessage(message);
+//    }
+    
+//    /**
+//     * Acceptation ou refus à un appel d'offre.
+//     *
+//     * @param ok
+//     * @param destinataire
+//     * @param negociation 
+//     */
+//    protected void reponseProposition(boolean ok, Agent destinataire, Negociation negociation) {
+//        Message message = new Message(Message.Type.PROPOSITION_PRIX, this, destinataire, negociation);
+// 
+//        if (ok) {
+//            message.setAction(Action.ACCEPTATION);
+//        } else {
+//            message.setAction(Action.REFUS);
+//        }
+//        
+//        if (negociation.getProposition() == null) {
+//            message.setMessage("Plus de proposition de disponible pour ce service");
+//        }
+//
+//        sendMessage(message);
+//    }
+    
+    protected void envoieAccordProposition(Agent destinataire, Negociation negociation, String raison) {
+        Message message = new Message(Message.Type.APPEL_OFFRE, this, destinataire, negociation);
+        message.setAction(Action.ACCEPTATION);
+        message.setMessage(raison);
 
         sendMessage(message);
     }
     
-    /**
-     * Acceptation ou refus à un appel d'offre.
-     *
-     * @param ok
-     * @param destinataire
-     * @param negociation 
-     */
-    protected void reponseProposition(boolean ok, Agent destinataire, Negociation negociation) {
+    protected void envoieRefusProposition(Agent destinataire, Negociation negociation, String raison) {
+        Message message = new Message(Message.Type.APPEL_OFFRE, this, destinataire, negociation);
+        message.setAction(Action.REFUS);
+        message.setMessage(raison);
+
+        sendMessage(message);
+    }
+
+    protected void envoieAccordPrix(Agent destinataire, Negociation negociation, String raison) {
         Message message = new Message(Message.Type.PROPOSITION_PRIX, this, destinataire, negociation);
- 
-        if (ok) {
-            message.setAction(Action.ACCEPTATION);
-        } else {
-            message.setAction(Action.REFUS);
-        }
+        message.setAction(Action.ACCEPTATION);
+        message.setMessage(raison);
 
         sendMessage(message);
+    }
+    
+    protected void envoieRefusPrix(Agent destinataire, Negociation negociation, String raison) {
+        Message message = new Message(Message.Type.PROPOSITION_PRIX, this, destinataire, negociation);
+        message.setAction(Action.REFUS);
+        message.setMessage(raison);
+
+        sendMessage(message);
+    }
+    
+    protected void envoieNouveauPrix(float prix, Agent destinataire, Negociation negociation, String detailPrix) {
+        Message message = new Message(Message.Type.PROPOSITION_PRIX, this, destinataire, negociation);
+        
+        if (destinataire instanceof Negociateur) {
+            negociation.getProposition().setPrix(prix);
+        } else if (destinataire instanceof Fournisseur) {
+            negociation.getVoeu().setPrix(prix);
+        }
+
+        negociation.incrementeNbEchanges();
+        message.setMessage(detailPrix);
+
+        sendMessage(message);
+    }
+
+    protected void displayMessageReçu(sma.Message message) {
+        dialogView.addDialogLine(message.getEmetteur().getName(), message.toString());
+    }
+
+    protected void displayMessageEnvoye(sma.Message message) {
+        Agent emetteur = (Agent) message.getEmetteur();
+        emetteur.dialogView.addDialogLine(emetteur.getName(), message.toString());
     }
 }

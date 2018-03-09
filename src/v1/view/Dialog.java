@@ -21,7 +21,7 @@ public class Dialog extends javax.swing.JFrame {
         this.agent = agent;
         initComponents();
         agentName.setText(agent.getName());
-        this.addDialogLine(agent.getName(), "Agent lancé");
+        addDialogLine(agent.getName(), "Agent lancé");
         setTitle(agent.getName());
         setVisible(true);
     }
@@ -32,8 +32,7 @@ public class Dialog extends javax.swing.JFrame {
         }
 
         String text = this.dialog.getText();
-        this.dialog.setText(text+'\n'+
-                from+" > "+ message);
+        this.dialog.setText(String.format("%s\n%s > %s\n", text, from, message));
     }
 
     /**

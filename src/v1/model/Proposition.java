@@ -6,9 +6,7 @@ package v1.model;
  * @author Mélanie DUBREUIL
  */
 public class Proposition extends Service {
-    private static int cpt = 0;
-
-    public Proposition(String type, String arrivee, String depart, int dateDepart, int dateArrivee, float prixDepart, float tarifMinimal) {
+    public Proposition(String type, String depart, String arrivee, int dateDepart, int dateArrivee, float prixDepart, float tarifMinimal) {
         super();
         this.id = cpt++;
         this.dateDepart = dateDepart;
@@ -17,7 +15,7 @@ public class Proposition extends Service {
         this.depart = depart;
         this.type = type;
         this.prixDepart = prixDepart;
-        this.prix = prixDepart;
+        //this.prix = prixDepart;
         this.tarifMinimal = tarifMinimal;
     }
 

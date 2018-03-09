@@ -17,6 +17,7 @@ public class Negociation {
     private Proposition proposition;
     private boolean refused = false; //@TODO Etat REFUSED/ACCEPTED
     private boolean accepted = false;
+    private int step = 0;
 
     public Negociation(Negociateur negociateur, Fournisseur fournisseur, Voeu voeu) {
         this.id = cptNegociation++;
@@ -103,6 +104,14 @@ public class Negociation {
 
     public void incrementeNbEchanges() {
         nombreEchanges++;
+    }
+    
+    public void incrementeStep() {
+        step++;
+    }
+
+    public int getStep() {
+        return step;
     }
 
     @Override

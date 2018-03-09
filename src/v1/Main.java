@@ -10,8 +10,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Lancement de la négociation.
  *
- * @author Epulapp
+ * @author Ophélie EOUZAN
+ * @author Mélanie DUBREUIL
+ *
+ * Scénatrio 2:
+ * - 1 fournisseur
+ * - 1 négociateur
+ * - N voeux
+ * - M offres dont 2 compatibles avec un même voeu => Permet de voir la stratégie de proposition d'1 fournisseur
+ * 
+ * Améliorations possibles:
+ * - Interface d'ajout de fournisseurs/négociateurs
+ * - Interface d'ajout d'offres/voeux
+ *
+ * Ce programme est de type déterministe si les offres et propositions 
+ * des fournisseurs/négociateurs sont les mêmes à chaque execution.
+ * 
+ * La stochasticité du programme réside dans l'aléatoire des offres et 
+ * voeux effectués par les acteurs externes au système.
  */
 public class Main {
     public static void main(String args[])
@@ -62,8 +80,8 @@ public class Main {
     {
         List<Voeu> voeux = new ArrayList();
         
-        Voeu v1 = new Voeu(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 14, 5, 20);
-        v1.setFrequence(10);
+        Voeu v1 = new Voeu(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 0, 5, 25); // Date d'arrivée indéfinie
+        v1.setFrequence(15);
         v1.setTypeCroissance(Voeu.CROISSANCE_LINEAIRE);
         v1.setCroissance(1);
         voeux.add(v1);
@@ -89,18 +107,16 @@ public class Main {
     {
         List<Proposition> propositions = new ArrayList();
         
-        Proposition p1 = new Proposition(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 14, 20, 10);
+        Proposition p1 = new Proposition(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 14, 30, 20);
         propositions.add(p1);
 
-//        Proposition p2 = new Proposition();
-//        p2.setDateDepart(10);
-//        p2.setDateArrivee(21);
-//        p2.setDepart("France");
-//        p2.setArrivee("Japon");
-//        p2.setType(Service.BILLET_TRAIN);
-//        p2.setDateButoire(5);
-//        p2.setTarifMinimal(100);
-//        propositions.add(p2);
+        Proposition p2 = new Proposition(Service.BILLET_AVION, "France", "Japon", 10, 21, 120, 100);
+        p2.setDateButoire(5);
+        propositions.add(p2);
+        
+        //@TODO tester la stratégie du fournisseurs lorsque plusieurs propositions possibles
+//        Proposition p3 = new Proposition(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 30, 10, 10);
+//        propositions.add(p3);
         
         return propositions;
     }

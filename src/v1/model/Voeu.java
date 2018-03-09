@@ -9,20 +9,17 @@ import v1.agent.Fournisseur;
  * @author Mélanie
  */
 public class Voeu extends Service {
-    private static int cpt = 0;
-
     public enum Etat {
         NON_TRAITE,
         TRAITE,
         TERMINE
     }
 
-    private int id;
     private Etat etat = Etat.NON_TRAITE;
     private Proposition proposition;
     private Fournisseur fournisseur;
 
-    public Voeu(String type, String arrivee, String depart, int dateDepart, int dateArrivee,float prixDepart, float tarifMaximum) {
+    public Voeu(String type, String depart, String arrivee, int dateDepart, int dateArrivee,float prixDepart, float tarifMaximum) {
         super();
         this.id = cpt++;
         this.dateDepart = dateDepart;
