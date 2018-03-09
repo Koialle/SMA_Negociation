@@ -140,11 +140,26 @@ public class Negociateur extends Agent {
         if (negociation.getNombreEchanges() > 0 && negociation.getNombreEchanges() < voeu.getFrequence()) {
             if (prixFournisseur > voeu.getPrix()) {
                 // Calcule du nouveau prix
-                float prix = voeu.getPrix(); // Ne sera pas modifié si la stratégie de négociation est nulle
+                float prixNegociateur = voeu.getPrix(); // Ne sera pas modifié si la stratégie de négociation est nulle
+                String explicationPrix = "";
                 if (voeu.getTypeCroissance().equals(Voeu.CROISSANCE_LINEAIRE)) {
-                    prix = voeu.getPrix() + voeu.getPrix() * voeu.getCroissance();
+                    prixNegociateur = voeu.getPrix() + voeu.getPrix() * voeu.getCroissance();
+                    explicationPrix = String.format("%.2f à la hausse avec taux de %.2f %%", voeu.getPrix(), voeu.getCroissance() * 100);
                 }
-                envoieNouveauPrix(prix, negociation.getFournisseur(), negociation, String.format("%.2f à la hausse avec taux de %.2f %%", voeu.getPrix(), voeu.getCroissance() * 100));
+                
+                if (prixFournisseur < prixNegociateur && prixFournisseur < voeu.getTarifMaximum()) {
+                    voeu.setPrix(prixFournisseur);
+                    envoieAcceptationPrix(negociation.getFournisseur(), negociation, String.format("Prix acceptabe et meilleur que nouveau prix calculé %.2f", prixNegociateur));
+                    
+                    return;
+                }
+                
+                if (prixNegociateur > voeu.getTarifMaximum()) {
+                    explicationPrix = String.format("Nouveau prix calculé %.2f trop haut -> Envoi du tarif maximal", prixNegociateur);
+                    prixNegociateur = voeu.getTarifMaximum();
+                }
+
+                envoieNouveauPrix(prixNegociateur, negociation.getFournisseur(), negociation, explicationPrix);
             } else {
                 // Acceptation du prix proposé
                 if (prixFournisseur <= voeu.getPrixDepart()) {

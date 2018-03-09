@@ -38,7 +38,7 @@ public class Fournisseur extends Agent {
         // Affichage des offres disponibles du fournisseur
         dialogView.addDialogLine(getName(), "Propositions disponibles:");
         for (Proposition proposition: propositions) {
-            dialogView.addDialogLine(getName(), proposition.toString());
+            dialogView.addDialogLine(getName(), "\nProposition:\n" + proposition.toString());
         }
 
         // Début interaction
@@ -82,8 +82,9 @@ public class Fournisseur extends Agent {
                                     // On va proposer l'offre qui a le plus de chance d'être acceptée en se basant sur le prix de départ                            
                                     float minAbsolue = -1;
                                     for (Proposition prop: listePropositions) {
-                                        if (Math.abs(prixNegociateur) < minAbsolue || minAbsolue < 0) {
-                                            minAbsolue = Math.abs(prixNegociateur);
+                                        float prixFournisseur = prop.getPrixDepart(); // Prix de départ ou tarif minimal ?
+                                        if (Math.abs(prixFournisseur - prixNegociateur) < minAbsolue || minAbsolue < 0) {
+                                            minAbsolue = Math.abs(prixFournisseur - prixNegociateur);
                                             proposition = prop;
                                         }
                                     }

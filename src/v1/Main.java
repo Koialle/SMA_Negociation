@@ -15,6 +15,8 @@ import java.util.List;
  * @author Ophélie EOUZAN
  * @author Mélanie DUBREUIL
  *
+ * @TODO Mettre ci-dessous dans README GitHub.
+ *
  * Scénatrio 2:
  * - 1 fournisseur
  * - 1 négociateur
@@ -24,12 +26,26 @@ import java.util.List;
  * Améliorations possibles:
  * - Interface d'ajout de fournisseurs/négociateurs
  * - Interface d'ajout d'offres/voeux
- *
- * Ce programme est de type déterministe si les offres et propositions 
- * des fournisseurs/négociateurs sont les mêmes à chaque execution.
+ * - Gestion des préférences et contraintes manquantes : fournisseurs préférés, dates de vente|achat au plus tard, ...
+ * - Scénario 3: 
+ *      - Négociations concourrantes
+ *      - Affectation de voeux et propositions aléatoirement
  * 
- * La stochasticité du programme réside dans l'aléatoire des offres et 
+ * Paramètres:
+ * - Nb fournisseurs|négociateurs
+ * - Nb voeux|propositions
+ * - Voeux: fréquence, type croissance, taux croissance, départ, arrivée, prix, départ, tarif max, (date départ), (date arrivée), ...
+ * - Propositions : prix départ, tarif min, ...
+ * /!\ Les valeurs entre parenthèses sont optionnelles. 
+ * Bien sûr, il faut donner le plus de renseinements possibles sur le service recherché pour faire fonctionner le système...
+ *
+ * Remarques :
+ * - Ce programme est de type déterministe si les offres et propositions 
+ * des fournisseurs/négociateurs sont les mêmes à chaque execution.
+ * - La stochasticité du programme réside dans l'aléatoire des offres et 
  * voeux effectués par les acteurs externes au système.
+ * - /!\ On considère que les agents ne connaissent pas les contraintes des 
+ * autres agents (tarif minimal, maximal, etc)
  */
 public class Main {
     public static void main(String args[])
@@ -89,16 +105,10 @@ public class Main {
         Voeu v2 = new Voeu(Service.BILLET_AVION, "Lyon", "Paris", 12, 14, 15, 50);
         voeux.add(v2);
         
-//        Voeu v3 = new Voeu();
-//        v2.setDateDepart(12);
-//        v2.setDateArrivee(14);
-//        v2.setDepart("France");
-//        v2.setArrivee("Japon");
-//        v2.setType(Service.BILLET_AVION);
-//        v2.setPrixDepart(90);
-//        v2.setTarifMaximum(120);
-//        v2.setCroissance(10);
-//        voeux.add(v3);
+        Voeu v3 = new Voeu(Service.BILLET_AVION, "France", "Japon", 0, 21, 90, 120);
+        v3.setCroissance((float) 0.01);
+        v3.setFrequence(20);
+        voeux.add(v3);
         
         return voeux;
     }
@@ -115,9 +125,9 @@ public class Main {
         propositions.add(p2);
         
         //@TODO tester la stratégie du fournisseurs lorsque plusieurs propositions possibles
-//        Proposition p3 = new Proposition(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 30, 10, 10);
-//        propositions.add(p3);
-        
+        Proposition p3 = new Proposition(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 30, 15, 10);
+        propositions.add(p3);
+
         return propositions;
     }
 }

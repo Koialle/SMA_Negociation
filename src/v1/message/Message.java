@@ -65,6 +65,12 @@ public class Message extends sma.Message {
     @Override
     public String toString() {
         String texte = String.format("\nNegociation n°%d, étape %d:\n%s -> %s", negociation.getId(), negociation.getStep(), emetteur.getName(), destinataire.getName());
+        if (negociation.getProposition() != null) {
+            texte += "\nRéférence proposition: " + negociation.getProposition().getId();
+        }
+        if (negociation.getVoeu()!= null) {
+            texte += "\nRéférence voeu: " + negociation.getVoeu().getId();
+        }
         if (message != null && message.length() > 0) {
             texte += "\nMessage: " + message;
         }
