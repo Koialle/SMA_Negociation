@@ -1,5 +1,5 @@
 
-package v1;
+package v1.model;
 
 import v1.agent.Fournisseur;
 

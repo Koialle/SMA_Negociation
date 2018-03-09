@@ -1,4 +1,4 @@
-package v1;
+package v1.model;
 
 import v1.agent.Negociateur;
 import v1.agent.Fournisseur;
@@ -10,7 +10,7 @@ import v1.agent.Fournisseur;
 public class Negociation {
     private static int cptNegociation = 0;
     private int nombreEchanges;
-    private int identifiantNegociation;
+    private int id;
     private Negociateur negociateur;
     private Fournisseur fournisseur;
     private Voeu voeu;
@@ -19,7 +19,7 @@ public class Negociation {
     private boolean accepted = false;
 
     public Negociation(Negociateur negociateur, Fournisseur fournisseur, Voeu voeu) {
-        this.identifiantNegociation = cptNegociation++;
+        this.id = cptNegociation++;
         this.nombreEchanges = 0;
         this.negociateur = negociateur;
         this.fournisseur = fournisseur;
@@ -34,12 +34,12 @@ public class Negociation {
         this.nombreEchanges = nombreEchanges;
     }
 
-    public int getIdentifiantNegociation() {
-        return identifiantNegociation;
+    public int getId() {
+        return id;
     }
 
-    public void setIdentifiantNegociation(int identifiantNegociation) {
-        this.identifiantNegociation = identifiantNegociation;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Negociateur getNegociateur() {
@@ -103,5 +103,10 @@ public class Negociation {
 
     public void incrementeNbEchanges() {
         nombreEchanges++;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj); //@TODO
     }
 }

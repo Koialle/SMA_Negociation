@@ -1,5 +1,5 @@
 
-package v1;
+package v1.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -200,5 +200,10 @@ public abstract class Service {
         if (fournisseursPreferes.size() > 0) message += "\n\tFrounisseurs préférés : " + fournisseursPreferes.size(); //@TODO liste des fournisseurs
 
         return message;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj); //@TODO
     }
 }

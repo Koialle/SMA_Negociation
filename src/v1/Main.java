@@ -1,6 +1,9 @@
 
 package v1;
 
+import v1.model.Voeu;
+import v1.model.Service;
+import v1.model.Proposition;
 import v1.agent.Negociateur;
 import v1.agent.Fournisseur;
 import java.util.ArrayList;

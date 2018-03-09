@@ -1,23 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package v1.agent;
 
 import java.util.ArrayList;
 import java.util.List;
-import v1.MessageNegociation;
-import v1.Negociation;
-import v1.Proposition;
-import v1.Voeu;
+import v1.message.Action;
+import v1.message.Message;
+import v1.message.Performatif;
+import v1.model.Negociation;
+import v1.model.Proposition;
+import v1.model.Voeu;
 import v1.view.Dialog;
 
 /**
+ * Fournisseur : aggrège des offres de compagnies arériennes ou ferroviaire et les soumets au Négociateur.
  *
- * @author Epulapp
+ * @author Ophélie EOUZAN
+ * @author Mélanie DUBREUIL
  */
-public class Fournisseur extends AgentNegociation {
+public class Fournisseur extends Agent {
     private static int cptFournisseurs = 0;
     protected List<Proposition> propositions;
     protected List<Negociateur> negociateurs;
@@ -28,7 +28,6 @@ public class Fournisseur extends AgentNegociation {
     public Fournisseur() {
         super(cptFournisseurs++);
         setName("Fournisseur n°"+id);
-        //name = "Fournisseur n°"+id;
         dialogView = new Dialog(this);
         negociateurs = new ArrayList();
         propositions = new ArrayList();
@@ -44,26 +43,24 @@ public class Fournisseur extends AgentNegociation {
 
     @Override
     protected void checkAllMessages() {
-        MessageNegociation message = null;
-        String action, performatif;
+        Message message = null;
         while (messages.size() > 0) {
-            message = (MessageNegociation) messages.poll();
-            performatif = message.getPerformatif();
-            action = message.getAction();
+            message = (Message) messages.poll();
+            Performatif performatif = (Performatif) message.getPerformatif();
+            Action action = (Action) message.getAction();
             Negociation negociation = message.getNegociation();
             dialogView.addDialogLine(getName(), "Reçu message: \n" + message.toString());
 
             // Appel d'offre
-            if (performatif.equals(MessageNegociation.PERFORMATIF_APPEL_OFFRE)
-                    && action.equals(MessageNegociation.ACTION_REQUEST)) {
+            if (performatif == Performatif.APPEL_OFFRE && action == Action.SOUMISSION) {
                 dialogView.addDialogLine(getName(), "Traitement de l'appel d'offre");
                 List<Proposition> listePropositions = getPropositionsPossibles(negociation.getVoeu());
                 dialogView.addDialogLine(getName(), String.format("%d offres trouvées", listePropositions.size()));
 
                 reponseAppelOffre(listePropositions.size() > 0, negociation);
-            } else if (performatif.equals(MessageNegociation.PERFORMATIF_PROPOSITION)) {
+            } else if (performatif == Performatif.PROPOSITION) {
                 switch (action) {
-                    case MessageNegociation.ACTION_PRIX_NEGOCIATEUR:
+                    case SOUMISSION:
                         float prixNegociateur = negociation.getVoeu().getPrix();
                         Proposition proposition = negociation.getProposition();
                         if (proposition == null) { // Première proposition
@@ -92,35 +89,33 @@ public class Fournisseur extends AgentNegociation {
                             // Pas de stratégie de croissance
                             negociation.setProposition(proposition);
                             if (prixNegociateur > proposition.getTarifMinimal()) {
+                                proposition.setPrix(prixNegociateur);
                                 reponseProposition(true, negociation.getNegociateur(), negociation);
                             } else {
                                 reponseProposition(false, negociation.getNegociateur(), negociation);
                             }
                         }
                         break;
-                    case MessageNegociation.ACTION_REFUSED_NEGOCIATION:
+                    case REFUS:
                         negociation.setRefused(true);
                         dialogView.addDialogLine(getName(), String.format("Refus de la négociation avec %s", message.getEmetteur().getName()));
                         break;
-                    default:
-                        dialogView.addDialogLine(getName(), "Default");
+                    case ACCEPTATION:
+                        //@TODO
+                        dialogView.addDialogLine(getName(), String.format("Acceptation de %s", message.getEmetteur().getName()));
                 }
             }
         }
     }
 
     private void reponseAppelOffre(boolean ok, Negociation negociation) {
-        MessageNegociation reponse;
+        Message reponse = new Message(Message.Type.APPEL_OFFRE, this, negociation.getNegociateur(), negociation);
 
         if (ok) {
-            reponse = new MessageNegociation(MessageNegociation.PERFORMATIF_APPEL_OFFRE, MessageNegociation.ACTION_ACCEPTED_OFFRE);
+            reponse.setAction(Action.ACCEPTATION);
         } else {
-            reponse = new MessageNegociation(MessageNegociation.PERFORMATIF_APPEL_OFFRE, MessageNegociation.ACTION_REFUSED_OFFRE);
+            reponse.setAction(Action.REFUS);
         }
-
-        reponse.setEmetteur(this);
-        reponse.setDestinataire(negociation.getNegociateur());
-        reponse.setNegociation(negociation);
 
         sendMessage(reponse);
     }
@@ -164,5 +159,10 @@ public class Fournisseur extends AgentNegociation {
         }
         
         return liste;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj); //@TODO
     }
 }

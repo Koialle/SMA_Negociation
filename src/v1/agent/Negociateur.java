@@ -1,23 +1,23 @@
 
 package v1.agent;
 
-import sma.Agent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import v1.MessageNegociation;
-import v1.Negociation;
+import v1.message.Action;
+import v1.message.Message;
+import v1.message.Performatif;
+import v1.model.Negociation;
 import v1.view.Dialog;
-import v1.Voeu;
+import v1.model.Voeu;
 
 /**
  *
  * @author Ophélie EOUZAN
  * @author Mélanie DUBREUIL
  */
-public class Negociateur extends AgentNegociation {
+public class Negociateur extends Agent {
     private static int cptNegociateurs = 0;
     protected List<Voeu> voeux;
     protected List<Fournisseur> fournisseurs;
@@ -55,10 +55,8 @@ public class Negociateur extends AgentNegociation {
                     }
 
                     Negociation negociation = new Negociation(this, fournisseur, voeu);
-                    MessageNegociation message = new MessageNegociation(this, fournisseur, negociation); 
-                    sendMessage(message);
-
-                    this.negociations.put(negociation.getIdentifiantNegociation(), negociation);
+                    sendMessage(new Message(Message.Type.APPEL_OFFRE, this, fournisseur, negociation));
+                    negociations.put(negociation.getId(), negociation);
                 }
 
                 voeu.setEtat(Voeu.Etat.TRAITE);
@@ -75,7 +73,7 @@ public class Negociateur extends AgentNegociation {
 //                    
 //                    if (nouveauFournisseur) {
 //                        Negociation negociation = new Negociation(this, fournisseur, voeu);
-//                        MessageNegociation message = new MessageNegociation(this, fournisseur, negociation); 
+//                        Message message = new Message(this, fournisseur, negociation); 
 //                        sendMessage(message);
 //
 //                        this.negociations.put(negociation.getIdentifiantNegociation(), negociation);
@@ -87,51 +85,54 @@ public class Negociateur extends AgentNegociation {
 
     @Override
     protected void checkAllMessages() {
-        MessageNegociation message = null;
-        String action, performatif;
+        Message message = null;
         while (messages.size() > 0) {
-            message = (MessageNegociation) messages.poll();
-            performatif = message.getPerformatif();
-            action = message.getAction();
-            Negociation negociation = negociations.get(message.getNegociation().getIdentifiantNegociation());
+            message = (Message) messages.poll();
             dialogView.addDialogLine(getName(), "Reçu message: \n" + message.toString());
-            
-            if (performatif.equals(MessageNegociation.PERFORMATIF_APPEL_OFFRE)) { // Appel d'offre
-                if (action.equals(MessageNegociation.ACTION_ACCEPTED_OFFRE)) {
-                    dialogView.addDialogLine(getName(), String.format("Début de la négociation(%d) avec le fournisseur %s", negociation.getIdentifiantNegociation(), message.getEmetteur().getName()));
-                    reponsePropositionPrix(negociation.getVoeu().getPrixDepart(), this, negociation.getFournisseur(), negociation);
-                } else if (action.equals(MessageNegociation.ACTION_REFUSED_OFFRE)) {
-                    negociations.get(negociation.getIdentifiantNegociation()).setRefused(true);
-                    dialogView.addDialogLine(getName(), String.format("Fin de la négociation(%d) avec %s", negociation.getIdentifiantNegociation(), message.getEmetteur().getName()));
-                }
-            } else if (performatif.equals(MessageNegociation.PERFORMATIF_PROPOSITION)) {
-                if (action.equals(MessageNegociation.ACTION_PRIX_FOURNISSEUR)) {
-                    if (negociation.isActive()) {
-                        reponsePrixNegociateur(negociation);
-                    } else {
-                        if (negociation.isAccepted()) {
-                            dialogView.addDialogLine(getName(), String.format("La négociation(%d) a déjà été  entre %s et %s"));
-                            
-                            MessageNegociation reponse = new MessageNegociation(MessageNegociation.PERFORMATIF_PROPOSITION, MessageNegociation.ACTION_REFUSED_NEGOCIATION);
-                            reponse.setEmetteur(this);
-                            reponse.setDestinataire(negociation.getFournisseur());
-                            reponse.setNegociation(negociation);
 
-                            sendMessage(reponse);
+            Performatif performatif = (Performatif) message.getPerformatif();
+            Action action = (Action) message.getAction();
+            Negociation negociation = negociations.get(message.getNegociation().getId());
+
+            if (performatif == Performatif.APPEL_OFFRE) { // Appel d'offre
+                if (action == Action.ACCEPTATION) {
+                    dialogView.addDialogLine(getName(), String.format("Début de la négociation(%d) avec le fournisseur %s", negociation.getId(), message.getEmetteur().getName()));
+                    reponsePropositionPrix(negociation.getVoeu().getPrixDepart(), this, negociation.getFournisseur(), negociation);
+                } else if (action == Action.REFUS) {
+                    negociations.get(negociation.getId()).setRefused(true);
+                    dialogView.addDialogLine(getName(), String.format("Fin de la négociation(%d) avec %s", negociation.getId(), message.getEmetteur().getName()));
+                }
+            } else if (performatif == Performatif.PROPOSITION) { // Proposition prix
+                switch (action) {
+                    case SOUMISSION:
+                        if (negociation.isActive()) {
+                            reponsePrixNegociateur(negociation);
                         } else {
-                            System.err.printf("La négociation(%d) a déjà été cloturée\n", negociation.getIdentifiantNegociation());
-                        }
-                    }
-                } else if (action.equals(MessageNegociation.ACTION_ACCEPTED_NEGOCIATION)) {
-                    negociation.setAccepted(true);
-                    dialogView.addDialogLine(getName(), String.format("Accord de la négociation %d entre %s et %s", negociation.getIdentifiantNegociation(), getName(), negociation.getFournisseur().getName()));
-                } else if (action.equals(MessageNegociation.ACTION_REFUSED_NEGOCIATION)) {
-                    if (negociation.getProposition() != null) {
-                        reponsePrixNegociateur(negociation);
-                    } else {
-                        negociation.setRefused(true);
-                        dialogView.addDialogLine(getName(), String.format("Refus de la négociation avec %s", message.getEmetteur().getName()));
-                    }
+                            if (negociation.isAccepted()) {
+                                String error = String.format("La négociation (%d) a déjà été  entre %s et %s", negociation.getId(), getName(), negociation.getFournisseur().getName());
+                                dialogView.addDialogLine(getName(), error);
+                                
+                                Message reponse = new Message(Message.Type.PROPOSITION_PRIX, this, negociation.getFournisseur(), negociation);
+                                reponse.setAction(Action.REFUS);
+                                reponse.setMessage(error);
+                                sendMessage(reponse);
+                            } else {
+                                System.err.printf("La négociation(%d) a déjà été cloturée\n", negociation.getId());
+                            }
+                        }   break;
+                    case ACCEPTATION:
+                        negociation.setAccepted(true);
+                        dialogView.addDialogLine(getName(), String.format("Accord de la négociation %d entre %s et %s", negociation.getId(), getName(), negociation.getFournisseur().getName()));
+                        break;
+                    case REFUS:
+                        if (negociation.getProposition() != null) {
+                            reponsePrixNegociateur(negociation);
+                        } else {
+                            negociation.setRefused(true);
+                            dialogView.addDialogLine(getName(), String.format("Refus de la négociation avec %s", message.getEmetteur().getName()));
+                        }   break;
+                    default:
+                        break;
                 }
             }
         }
@@ -148,7 +149,7 @@ public class Negociateur extends AgentNegociation {
                 Voeu voeu = negociation.getVoeu();
                 float prix = voeu.getPrix() > 0 ? voeu.getPrix(): voeu.getPrixDepart(); // Ne sera pas modifié si la stratégie de négociation est nulle
                 if (voeu.getTypeCroissance().equals(Voeu.CROISSANCE_LINEAIRE)) {
-                    prix = voeu.getPrix() + voeu.getPrix() * voeu.getCroissance();
+                    prix = voeu.getPrix() - voeu.getPrix() * voeu.getCroissance();
                 }
                 reponsePropositionPrix(prix, this, negociation.getFournisseur(), negociation);
             }
@@ -158,7 +159,7 @@ public class Negociateur extends AgentNegociation {
                 // Fin de la négociation => répond oui si prixFournisseur dans le budget, non sinon
                 reponseProposition(prixFournisseur <= negociation.getVoeu().getTarifMaximum(), negociation.getFournisseur(), negociation);
             } else {
-                dialogView.addDialogLine(getName(), String.format("Fin de la négociation(%d) avec %s", negociation.getIdentifiantNegociation(), negociation.getFournisseur().getName()));
+                dialogView.addDialogLine(getName(), String.format("Fin de la négociation(%d) avec %s", negociation.getId(), negociation.getFournisseur().getName()));
             }
         }
     }

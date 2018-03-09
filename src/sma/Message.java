@@ -14,26 +14,26 @@ public abstract class Message {
     /**
      * Inform, request, ...
      */
-    protected String performatif;
+    protected IPerformatif performatif;
     
     /**
-     * Accept, Refuse, 
+     * Accept, Refuse, ...
      */
-    protected String action;
+    protected IAction action;
 
-    public String getPerformatif() {
+    public IPerformatif getPerformatif() {
         return performatif;
     }
 
-    public void setPerformatif(String performatif) {
+    public void setPerformatif(IPerformatif performatif) {
         this.performatif = performatif;
     }
 
-    public String getAction() {
+    public IAction getAction() {
         return action;
     }
 
-    public void setAction(String action) {
+    public void setAction(IAction action) {
         this.action = action;
     }
 

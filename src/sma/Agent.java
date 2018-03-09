@@ -1,18 +1,8 @@
 
 package sma;
 
-import sma.Message;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import v1.MessageNegociation;
-import v1.Negociation;
-import v1.Proposition;
-import v1.view.Dialog;
 
 /**
  * Agent cognitif évoluant dans le jeu du taquin, communiquant avec les autres agents :
@@ -50,31 +40,6 @@ public abstract class Agent extends Thread {
      * Dépile les messages reçus par les autres agents.
      */
     abstract protected void checkAllMessages();
-//     throws Exception {
-        //@TODO handle blocking behaviour : when two agents want to exchange position
-//        Message message = null;
-//        while (messages.size() > 0) {
-//            message = messages.poll();
-//            if (message != null) {
-//                if (message.getPerformatif().equals(Message.PERFORMATIVE_REQUEST) && message.getAction().equals(Message.ACTION_MOVE)) {
-//                    Agent emetteur = message.getEmetteur();
-//                    System.out.printf("Agent %s (%d, %d) : Message reçu de %s pour la position (%d, %d)\n", symbole, position.getX(), position.getY(), emetteur.getSymbole(), message.getPosition().getX(), message.getPosition().getY());
-//
-//                    if (this.position.equals(message.getPosition())) {
-//                        Position newPosition = Grille.move(this, true); // get position
-//
-//                        if (newPosition != null) {
-//                            System.out.printf("Agent %s (%d, %d) : Tentative de déplacement vers (%d, %d) à la demande de %s\n", symbole, position.getX(), position.getY(), newPosition.getX(), newPosition.getY(), emetteur.getSymbole());
-//                        }
-//
-//                        this.processMovement(newPosition);
-//                    } else {
-//                        System.out.printf("Agent %s (%d, %d) : Demande de déplacement par %s expirée\n", symbole, position.getX(), position.getY(), emetteur.getSymbole());
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     protected synchronized void addMessage(Message message) {
         this.messages.add(message);

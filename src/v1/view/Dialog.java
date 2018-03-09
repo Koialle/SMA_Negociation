@@ -5,19 +5,19 @@
  */
 package v1.view;
 
-import v1.agent.AgentNegociation;
+import v1.agent.Agent;
 
 /**
  *
  * @author Epulapp
  */
 public class Dialog extends javax.swing.JFrame {
-    private AgentNegociation agent;
+    private Agent agent;
 
     /**
      * Creates new form Dialog
      */
-    public Dialog(AgentNegociation agent) {
+    public Dialog(Agent agent) {
         this.agent = agent;
         initComponents();
         agentName.setText(agent.getName());
