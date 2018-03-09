@@ -81,7 +81,7 @@ public class Main {
         List<Voeu> voeux = new ArrayList();
         
         Voeu v1 = new Voeu(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 0, 5, 25); // Date d'arrivée indéfinie
-        v1.setFrequence(15);
+        v1.setFrequence(5);
         v1.setTypeCroissance(Voeu.CROISSANCE_LINEAIRE);
         v1.setCroissance(1);
         voeux.add(v1);

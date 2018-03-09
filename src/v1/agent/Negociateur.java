@@ -58,7 +58,8 @@ public class Negociateur extends Agent {
                     sendMessage(new Message(Message.Type.APPEL_OFFRE, this, fournisseur, negociation));
                     negociations.put(negociation.getId(), negociation);
                 }
-            } 
+            }
+            // @TODO scénario 3
 //            else if (voeu.getEtat() == Voeu.Etat.EN_TRAITEMENT ) { // Cas d'un voeu en traitement dont toutes les négociations ont été en échec.
 //                for (Fournisseur fournisseur: fournisseurs) {
 //                    boolean nouveauFournisseur = true;
@@ -153,15 +154,14 @@ public class Negociateur extends Agent {
                 }
             }
         } else {
-            if (negociation.getNombreEchanges() == negociation.getVoeu().getFrequence()) {
+            // Nombre d'échanges dépassés
+            if (negociation.getNombreEchanges() >= negociation.getVoeu().getFrequence()) {
                 // Fin de la négociation => répond oui si prixFournisseur dans le budget, non sinon
                 if (prixFournisseur <= negociation.getVoeu().getTarifMaximum()) {
                     envoieAcceptationPrix(negociation.getFournisseur(), negociation, "Prix dans le budget");
                 } else {
                     envoieRefusPrix(negociation.getFournisseur(), negociation, "Prix hors budget");
                 }
-            } else {
-                dialogView.addDialogLine(getName(), String.format("Test,Fin de la négociation %d avec %s", negociation.getId(), negociation.getFournisseur().getName()));
             }
         }
     }

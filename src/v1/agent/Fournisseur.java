@@ -71,7 +71,7 @@ public class Fournisseur extends Agent {
                     case SOUMISSION:
                         float prixNegociateur = negociation.getVoeu().getPrix();
                         Proposition proposition = negociation.getProposition();
-                        
+
                         // Choix de la proposition à lier à la néociation (étape = 4)
                         if (proposition == null) {
                             List<Proposition> listePropositions = getPropositionsPossibles(negociation.getVoeu());
@@ -100,7 +100,20 @@ public class Fournisseur extends Agent {
                             negociation.setProposition(proposition);
                             String explicationPrix;
                             float prixFournisseur = proposition.getPrix();
+                            
+                            // Si nombre d'échanges dépassé :
+                            if (negociation.getNombreEchanges() >= negociation.getVoeu().getFrequence()) {
+                                if (prixNegociateur >= proposition.getTarifMinimal()) {
+                                    proposition.setPrix(prixNegociateur);
+                                    envoieAcceptationPrix(negociation.getNegociateur(), negociation, "Prix acceptable (mieux que rien)");
+                                } else {
+                                    envoieRefusPrix(negociation.getNegociateur(), negociation, "Tarif minimal de vente dépassé");
+                                }
 
+                                continue;
+                            }
+
+                            // Poursuite de la néociation du prix
                             if (proposition.getPrix() == 0) {
                                 prixFournisseur = proposition.getPrixDepart();
                                 explicationPrix = "Pris de départ fournisseur";

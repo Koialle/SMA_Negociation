@@ -79,10 +79,10 @@ public class Message extends sma.Message {
                 texte += "\nAppel d'offre : " + action;
             }
         } else if (performatif == Performatif.PROPOSITION) {
-            if (negociation.getNombreEchanges() > 0) texte += String.format("\nOccurence: %d/%d", negociation.getNombreEchanges(), negociation.getVoeu().getFrequence());
             texte += "\nProposition prix : " + action;
             switch ((Action) action) {
                 case SOUMISSION:
+                    if (negociation.getNombreEchanges() > 0) texte += String.format("\nOccurence: %d/%d", negociation.getNombreEchanges(), negociation.getVoeu().getFrequence());
                     if (emetteur.getId() == negociation.getFournisseur().getId()) {
                         texte += "\nSoumission prix fournisseur: " + negociation.getProposition().getPrix();
                     } else {
