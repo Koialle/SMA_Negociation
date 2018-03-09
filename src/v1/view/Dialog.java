@@ -28,7 +28,7 @@ public class Dialog extends javax.swing.JFrame {
     
     public void addDialogLine(String from, String message) {
         if (from.equals(agent.getName())) {
-            from = "ME";
+            from = "Moi";
         }
 
         String text = this.dialog.getText();

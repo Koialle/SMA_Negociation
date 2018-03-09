@@ -46,45 +46,6 @@ public abstract class Agent extends sma.Agent {
         }
     }
     
-//    /**
-//     * Soumission d'un nouveau prix.
-//     *
-//     * @param prix
-//     * @param emetteur
-//     * @param destinataire
-//     * @param negociation 
-//     */
-//    protected void reponsePropositionPrix(float prix, Agent emetteur, Agent destinataire, Negociation negociation) {
-//        Message message = new Message(Message.Type.PROPOSITION_PRIX, emetteur, destinataire, negociation);
-//        negociation.getVoeu().setPrix(prix);
-//        negociation.incrementeNbEchanges();
-//
-//        sendMessage(message);
-//    }
-    
-//    /**
-//     * Acceptation ou refus à un appel d'offre.
-//     *
-//     * @param ok
-//     * @param destinataire
-//     * @param negociation 
-//     */
-//    protected void reponseProposition(boolean ok, Agent destinataire, Negociation negociation) {
-//        Message message = new Message(Message.Type.PROPOSITION_PRIX, this, destinataire, negociation);
-// 
-//        if (ok) {
-//            message.setAction(Action.ACCEPTATION);
-//        } else {
-//            message.setAction(Action.REFUS);
-//        }
-//        
-//        if (negociation.getProposition() == null) {
-//            message.setMessage("Plus de proposition de disponible pour ce service");
-//        }
-//
-//        sendMessage(message);
-//    }
-    
     protected void envoieAccordProposition(Agent destinataire, Negociation negociation, String raison) {
         Message message = new Message(Message.Type.APPEL_OFFRE, this, destinataire, negociation);
         message.setAction(Action.ACCEPTATION);
@@ -101,7 +62,7 @@ public abstract class Agent extends sma.Agent {
         sendMessage(message);
     }
 
-    protected void envoieAccordPrix(Agent destinataire, Negociation negociation, String raison) {
+    protected void envoieAcceptationPrix(Agent destinataire, Negociation negociation, String raison) {
         Message message = new Message(Message.Type.PROPOSITION_PRIX, this, destinataire, negociation);
         message.setAction(Action.ACCEPTATION);
         message.setMessage(raison);
@@ -130,6 +91,28 @@ public abstract class Agent extends sma.Agent {
         message.setMessage(detailPrix);
 
         sendMessage(message);
+    }
+    
+    protected void negociationAcceptee(Negociation negociation) {
+        negociation.accepter();
+        float prix = negociation.getVoeu().getProposition().getPrix();
+        Agent F = negociation.getFournisseur();
+        Agent N = negociation.getNegociateur();
+        String message = "Accord de la négociation %d entre %s et %s -> %.2f€";
+        F.dialogView.addDialogLine(getName(), String.format(message, negociation.getId(), F.getName(), N.getName(), prix));
+        N.dialogView.addDialogLine(getName(), String.format(message, negociation.getId(), F.getName(), N.getName(), prix));
+    }
+    
+    protected void negociationRefusee(Negociation negociation) {
+        negociation.setEtat(Negociation.Etat.REFUSEE);
+        float prixN = negociation.getVoeu().getPrix();
+        float prixF = negociation.getProposition().getPrix();
+
+        Agent F = negociation.getFournisseur();
+        Agent N = negociation.getNegociateur();
+        String message = "Refus de la négociation avec %s (%.2f€ vs %.2f€)";
+        F.dialogView.addDialogLine(getName(), String.format(message, F.getName(), prixN, prixF));
+        N.dialogView.addDialogLine(getName(), String.format(message, N.getName(), prixN, prixF));
     }
 
     protected void displayMessageReçu(sma.Message message) {

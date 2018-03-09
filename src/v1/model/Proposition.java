@@ -15,7 +15,6 @@ public class Proposition extends Service {
         this.depart = depart;
         this.type = type;
         this.prixDepart = prixDepart;
-        //this.prix = prixDepart;
         this.tarifMinimal = tarifMinimal;
     }
 

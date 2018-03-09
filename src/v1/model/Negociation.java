@@ -6,8 +6,15 @@ import v1.agent.Fournisseur;
 /**
  *
  * @author Ophélie EOUZAN
+ * @author Mélanie DUBREUIL
  */
 public class Negociation {
+    public enum Etat {
+        REFUSEE,
+        ACCEPTEE,
+        EN_COURS
+    }
+
     private static int cptNegociation = 0;
     private int nombreEchanges;
     private int id;
@@ -15,8 +22,7 @@ public class Negociation {
     private Fournisseur fournisseur;
     private Voeu voeu;
     private Proposition proposition;
-    private boolean refused = false; //@TODO Etat REFUSED/ACCEPTED
-    private boolean accepted = false;
+    private Etat etat= Etat.EN_COURS;
     private int step = 0;
 
     public Negociation(Negociateur negociateur, Fournisseur fournisseur, Voeu voeu) {
@@ -25,6 +31,7 @@ public class Negociation {
         this.negociateur = negociateur;
         this.fournisseur = fournisseur;
         this.voeu = voeu;
+        this.voeu.setEtat(Voeu.Etat.EN_TRAITEMENT);
     }
 
     public int getNombreEchanges() {
@@ -75,31 +82,25 @@ public class Negociation {
         this.proposition = proposition;
     }
 
-    public boolean isRefused() {
-        return refused;
+    public Etat getEtat() {
+        return etat;
     }
 
-    public void setRefused(boolean refused) {
-        this.refused = refused;
+    public void setEtat(Etat etat) {
+        this.etat = etat;
     }
 
-    public boolean isAccepted() {
-        return accepted;
-    }
+    public void accepter() {
+        setEtat(Etat.ACCEPTEE);
 
-    public void setAccepted(boolean accepted) {
-        this.accepted = accepted;
-        
-        if (accepted) {
-            voeu.setProposition(proposition);
-            voeu.setFournisseur(fournisseur);
-            voeu.setEtat(Voeu.Etat.TERMINE);
-            // Faut-il aussi rattacher le voeu à la proposition ? Relation de 1-1 entre voeu et proposition
-        }
+        // Est-ce nécéssaire de faire ça :
+        voeu.setProposition(proposition);
+        voeu.setFournisseur(fournisseur);
+        voeu.setEtat(Voeu.Etat.RESOLU);
     }
     
     public boolean isActive() {
-        return !(accepted || refused);
+        return etat == Etat.EN_COURS;
     }
 
     public void incrementeNbEchanges() {

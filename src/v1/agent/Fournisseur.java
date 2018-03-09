@@ -20,14 +20,14 @@ import v1.view.Dialog;
 public class Fournisseur extends Agent {
     private static int cptFournisseurs = 0;
     protected List<Proposition> propositions;
-    protected List<Negociateur> negociateurs;
+    protected List<Negociateur> negociateurs; // Est-ce nécéssaire finalement ?
 
     // @TODO gérer cas où fournisseur refuse, donc négociateur remonte son prix si possible
     // @TODO gérer cas où plusieurs fournisseurs proposer le même produit, choisir le prix minimal
 
     public Fournisseur() {
         super(cptFournisseurs++);
-        setName("Fournisseur n°"+id);
+        setName("Fournisseur n°" + id);
         dialogView = new Dialog(this);
         negociateurs = new ArrayList();
         propositions = new ArrayList();
@@ -49,7 +49,7 @@ public class Fournisseur extends Agent {
 
     @Override
     protected void checkAllMessages() {
-        Message message = null;
+        Message message;
         while (messages.size() > 0) {
             message = (Message) messages.poll();
             Performatif performatif = (Performatif) message.getPerformatif();
@@ -98,42 +98,38 @@ public class Fournisseur extends Agent {
                             envoieRefusPrix(negociation.getNegociateur(), negociation, "Plus d'offres de disponibles pour ce service");
                         } else {
                             negociation.setProposition(proposition);
-                            if (prixNegociateur < proposition.getTarifMinimal()) { // Refus car tarif minimal pas respecté
-                                envoieRefusPrix(negociation.getNegociateur(), negociation, "Tarif minimal dépassé");
-                            } else {
-                                float nouveauPrixFournisseur = proposition.getPrix() - proposition.getPrix() * (float) 0.2;
-                                String accord;
-                                if (prixNegociateur > nouveauPrixFournisseur) {
-                                    nouveauPrixFournisseur = prixNegociateur;
-                                    accord = "Prix du négociateur accepté";
+                            String explicationPrix;
+                            float prixFournisseur = proposition.getPrix();
+
+                            if (proposition.getPrix() == 0) {
+                                prixFournisseur = proposition.getPrixDepart();
+                                explicationPrix = "Pris de départ fournisseur";
+                            } else {                                
+                                if (prixNegociateur >= prixFournisseur) {
+                                    prixFournisseur = prixNegociateur;
+                                    explicationPrix = "Prix du négociateur accepté";
                                 } else {
-                                    accord = String.format("%.2f à la baisse avec taux de %.2f %\nRemarque: Taux en dur pour le fournisseur", proposition.getPrix(), 0.2 * 100);
+                                    prixFournisseur = proposition.getPrix() - proposition.getPrix() * (float) 0.2;
+                                    explicationPrix = String.format("%.2f à la baisse avec taux de %.2f %%\nRemarque: Taux en dur pour le fournisseur", proposition.getPrix(), 0.2 * 100);
                                 }
-                                envoieNouveauPrix(nouveauPrixFournisseur, negociation.getNegociateur(), negociation, accord);
+
+                                if (prixFournisseur < proposition.getTarifMinimal()) {
+                                    explicationPrix = String.format("Nouveau prix calculé %.2f trop bas -> Envoi du tarif minimal", prixFournisseur, proposition.getTarifMinimal());
+                                    prixFournisseur = proposition.getTarifMinimal();
+                                }
                             }
+
+                            envoieNouveauPrix(prixFournisseur, negociation.getNegociateur(), negociation, explicationPrix);
                         }
                         break;
-//                    case REFUS:
-//                        //@TODO gérer fon négociation
-//                        negociation.setRefused(true);
-//                        dialogView.addDialogLine(getName(), String.format("Refus de la négociation avec %s", message.getEmetteur().getName()));
-//                        break;
-//                    case ACCEPTATION:
-//                        //@TODO gérer fon négociation
-//                        dialogView.addDialogLine(getName(), String.format("Acceptation de %s", message.getEmetteur().getName()));
-//                    case ACCEPTATION:
-//                        negociation.setAccepted(true);
-//                        dialogView.addDialogLine(getName(), String.format("Accord de la négociation %d entre %s et %s", negociation.getId(), getName(), negociation.getFournisseur().getName()));
-//                        break;
-//                    case REFUS:
-//                        if (negociation.getProposition() != null) {
-//                            reponsePrixNegociateur(negociation);
-//                        } else {
-//                            negociation.setRefused(true);
-//                            dialogView.addDialogLine(getName(), String.format("Refus de la négociation avec %s", message.getEmetteur().getName()));
-//                        }   break;
+                    case ACCEPTATION:
+                        negociationAcceptee(negociation);
+                        break;
+                    case REFUS:
+                        negociationRefusee(negociation);
+                        break;
                     default:
-                        System.out.println(getName() + ": reçu " + action);
+                        dialogView.addDialogLine(getName(), "non géré");
                 }
             }
         }

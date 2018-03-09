@@ -168,7 +168,7 @@ public abstract class Service {
         if (croissance > 0) {
             if (croissance > 1) {
                 this.croissance = 1;
-                System.err.printf("Le taux ne croissance (%.2f) ne peut pas être supérieur à 100%, soit 1.\n", croissance);
+                System.err.printf("Le taux ne croissance (%.2f) ne peut pas être supérieur à 100%%, soit 1.\n", croissance);
             } else {
                 this.croissance = croissance;
             }

@@ -64,8 +64,8 @@ public class Message extends sma.Message {
 
     @Override
     public String toString() {
-        String texte = String.format("\nNegociation n°%d, étape %d:\n%s >>> %s", negociation.getId(), negociation.getStep(), emetteur.getName(), destinataire.getName());
-        if (message != null) {
+        String texte = String.format("\nNegociation n°%d, étape %d:\n%s -> %s", negociation.getId(), negociation.getStep(), emetteur.getName(), destinataire.getName());
+        if (message != null && message.length() > 0) {
             texte += "\nMessage: " + message;
         }
 
@@ -80,6 +80,7 @@ public class Message extends sma.Message {
             }
         } else if (performatif == Performatif.PROPOSITION) {
             if (negociation.getNombreEchanges() > 0) texte += String.format("\nOccurence: %d/%d", negociation.getNombreEchanges(), negociation.getVoeu().getFrequence());
+            texte += "\nProposition prix : " + action;
             switch ((Action) action) {
                 case SOUMISSION:
                     if (emetteur.getId() == negociation.getFournisseur().getId()) {

@@ -11,8 +11,8 @@ import v1.agent.Fournisseur;
 public class Voeu extends Service {
     public enum Etat {
         NON_TRAITE,
-        TRAITE,
-        TERMINE
+        EN_TRAITEMENT,
+        RESOLU
     }
 
     private Etat etat = Etat.NON_TRAITE;
