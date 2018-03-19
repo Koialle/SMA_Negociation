@@ -46,11 +46,11 @@ public class Message extends sma.Message {
         action = Action.SOUMISSION;
     }
 
-    public Negociation getNegociation() {
+    public synchronized Negociation getNegociation() {
         return negociation;
     }
 
-    public void setNegociation(Negociation negociation) {
+    public synchronized void setNegociation(Negociation negociation) {
         this.negociation = negociation;
     }
 

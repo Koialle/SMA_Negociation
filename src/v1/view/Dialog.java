@@ -20,6 +20,7 @@ public class Dialog extends javax.swing.JFrame {
     public Dialog(Agent agent) {
         this.agent = agent;
         initComponents();
+        dialog.setEditable(false);
         agentName.setText(agent.getName());
         addDialogLine(agent.getName(), "Agent lancé");
         setTitle(agent.getName());

@@ -36,13 +36,17 @@ public class Fournisseur extends Agent {
     @Override
     public void runAgent() {
         // Affichage des offres disponibles du fournisseur
-        dialogView.addDialogLine(getName(), "Propositions disponibles:");
-        for (Proposition proposition: propositions) {
-            dialogView.addDialogLine(getName(), "\nProposition:\n" + proposition.toString());
+        if (propositions.size() > 0) {
+            dialogView.addDialogLine(getName(), "Propositions disponibles:");
+            for (Proposition proposition: propositions) {
+                dialogView.addDialogLine(getName(), "\nProposition:\n" + proposition.toString());
+            }
+        } else {
+            dialogView.addDialogLine(getName(), "Pas de billet disponible");
         }
 
         // Début interaction
-        while (propositions.size() > 0 || getMessages().size() > 0) { // while (true)
+        while (true) {
             checkAllMessages();
         }
     }
@@ -58,13 +62,23 @@ public class Fournisseur extends Agent {
             displayMessageReçu(message);
 
             // Appel d'offre
-            if (performatif == Performatif.APPEL_OFFRE && action == Action.SOUMISSION) {
-                List<Proposition> listePropositions = getPropositionsPossibles(negociation.getVoeu());
-                String nbOffres = String.format("%d offres trouvées", listePropositions.size());
-                if (listePropositions.size() > 0) {
-                    envoieAccordProposition(negociation.getNegociateur(), negociation, nbOffres);
-                } else {
-                    envoieRefusProposition(negociation.getNegociateur(), negociation, nbOffres);
+            if (performatif == Performatif.APPEL_OFFRE) {
+                switch (action) {
+                    case SOUMISSION:
+                        List<Proposition> listePropositions = getPropositionsPossibles(negociation.getVoeu());
+                        String nbOffres = String.format("%d offres trouvées", listePropositions.size());
+                        if (listePropositions.size() > 0) {
+                            envoieAccordProposition(negociation.getNegociateur(), negociation, nbOffres);
+                        } else {
+                            envoieRefusProposition(negociation.getNegociateur(), negociation, nbOffres);
+                        }
+                        break;
+                    case ACCEPTATION:
+                        negociationAcceptee(negociation);
+                        break;
+                    case REFUS:
+                        negociationRefusee(negociation);
+                        break;
                 }
             } else if (performatif == Performatif.PROPOSITION) {
                 switch (action) {
@@ -137,7 +151,7 @@ public class Fournisseur extends Agent {
                         }
                         break;
                     case ACCEPTATION:
-                        negociationAcceptee(negociation);
+                        traitementAcceptationPrix(negociation);
                         break;
                     case REFUS:
                         negociationRefusee(negociation);
@@ -151,6 +165,10 @@ public class Fournisseur extends Agent {
 
     public void addProposition(Proposition proposition) {
         this.propositions.add(proposition);
+    }
+    
+    public void removeProposition(Proposition proposition) {
+        this.propositions.remove(proposition);
     }
 
     public List<Proposition> getPropositions() {

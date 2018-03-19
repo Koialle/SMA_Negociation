@@ -1,6 +1,8 @@
 
 package v1.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import v1.agent.Fournisseur;
 
 /**
@@ -12,13 +14,25 @@ public class Voeu extends Service {
     public enum Etat {
         NON_TRAITE,
         EN_TRAITEMENT,
+        A_REBOUCLER,
         RESOLU
     }
 
     private Etat etat = Etat.NON_TRAITE;
     private Proposition proposition;
     private Fournisseur fournisseur;
+    private List<Negociation> negociations;
 
+    /**
+     * Billet recherché
+     * @param type
+     * @param depart
+     * @param arrivee
+     * @param dateDepart
+     * @param dateArrivee
+     * @param prixDepart
+     * @param tarifMaximum Budget à ne pas dépasser
+     */
     public Voeu(String type, String depart, String arrivee, int dateDepart, int dateArrivee,float prixDepart, float tarifMaximum) {
         super();
         this.id = cpt++;
@@ -29,6 +43,7 @@ public class Voeu extends Service {
         this.type = type;
         this.prixDepart = prixDepart;
         this.tarifMaximum = tarifMaximum;
+        this.negociations = new ArrayList();
     }
 
     public Etat getEtat() {
@@ -53,6 +68,14 @@ public class Voeu extends Service {
 
     public void setFournisseur(Fournisseur fournisseur) {
         this.fournisseur = fournisseur;
+    }
+    
+    public void addNegociation(Negociation negociation) {
+        this.negociations.add(negociation);
+    }
+    
+    public List<Negociation> getNegociations() {
+        return this.negociations;
     }
 
     @Override

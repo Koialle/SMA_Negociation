@@ -47,13 +47,16 @@ import java.util.List;
  * - /!\ On considère que les agents ne connaissent pas les contraintes des 
  * autres agents (tarif minimal, maximal, etc)
  */
-public class Main {
+public class Scenario2 {
     public static void main(String args[])
     {
         // Schénario 1
         // - 1 fournisseur avec 1 proposition
         // - 1 negociateur avec 1 appel d'offre
 
+        // Scénario 2
+        // Create fournisseur avec N propositions
+        // Create negociateur avec M appels d'offre
         List<Fournisseur> fournisseurs = new ArrayList<>();
         List<Negociateur> negociateurs = new ArrayList<>();
 
@@ -82,14 +85,6 @@ public class Main {
         for (Fournisseur fournisseur: fournisseurs) {
             fournisseur.start();
         }
-
-        // Scénario 2
-        // Create fournisseur avec N propositions
-        // Create negociateur avec M appels d'offre
-        
-        // Scénario 3
-        // Create X fournisseurs avec N propositions
-        // Create Y negociateurs avec M appels d'offre
     }
     
     private static List<Voeu> getListeVoeux()
@@ -124,7 +119,6 @@ public class Main {
         p2.setDateButoire(5);
         propositions.add(p2);
         
-        //@TODO tester la stratégie du fournisseurs lorsque plusieurs propositions possibles
         Proposition p3 = new Proposition(Service.BILLET_TRAIN, "Lyon", "Paris", 12, 30, 15, 10);
         propositions.add(p3);
 

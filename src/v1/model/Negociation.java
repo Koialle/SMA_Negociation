@@ -91,12 +91,12 @@ public class Negociation {
     }
 
     public void accepter() {
+        System.out.println("Acceptation voeu n°" + voeu.getId());
         setEtat(Etat.ACCEPTEE);
-
-        // Est-ce nécéssaire de faire ça :
+        voeu.setEtat(Voeu.Etat.RESOLU);
         voeu.setProposition(proposition);
         voeu.setFournisseur(fournisseur);
-        voeu.setEtat(Voeu.Etat.RESOLU);
+        fournisseur.removeProposition(proposition);
     }
     
     public boolean isActive() {

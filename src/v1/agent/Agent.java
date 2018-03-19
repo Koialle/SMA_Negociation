@@ -14,7 +14,7 @@ import v1.view.Dialog;
  * @author Mélanie DUBREUIL
  */
 public abstract class Agent extends sma.Agent {
-    protected Map<Integer, Negociation> negociations;
+    // protected Map<Integer, Negociation> negociations;
     protected Dialog dialogView;
     protected int id;
     
@@ -24,7 +24,7 @@ public abstract class Agent extends sma.Agent {
      */
     public Agent(int id) {
         super();
-        this.negociations = new HashMap<>();
+        // this.negociations = new HashMap<>();
         this.id = id;
     }
 
@@ -93,16 +93,30 @@ public abstract class Agent extends sma.Agent {
         sendMessage(message);
     }
     
+//    protected void envoieMeilleureOffreTrouvee(Negociation negociation, Negociation meilleureOffre) {
+//        negociation.setEtat(Negociation.Etat.REFUSEE);
+//        float meilleurPrix = meilleureOffre.getProposition().getPrix();
+//        float prixCourant = negociation.getProposition().getPrix();
+//
+//        Agent F = negociation.getFournisseur();
+//        //Agent N = negociation.getNegociateur();
+//        String message = "Refus de la négociation avec %s car meilleure offre trouvée (%.2f€ vs %.2f€)";
+//        F.dialogView.addDialogLine(getName(), String.format(message, F.getName(), prixCourant, meilleurPrix));
+//        //N.dialogView.addDialogLine(getName(), String.format(message, N.getName(), prixCourant, meilleurPrix));
+//    }
+    
+    
+    // Helpers d'affichage
     protected void negociationAcceptee(Negociation negociation) {
         negociation.accepter();
         float prix = negociation.getVoeu().getProposition().getPrix();
         Agent F = negociation.getFournisseur();
         Agent N = negociation.getNegociateur();
-        String message = "Accord de la négociation %d entre %s et %s -> %.2f€";
+        String message = "Accord définitif de la négociation %d entre %s et %s -> %.2f€";
         F.dialogView.addDialogLine(getName(), String.format(message, negociation.getId(), F.getName(), N.getName(), prix));
         N.dialogView.addDialogLine(getName(), String.format(message, negociation.getId(), F.getName(), N.getName(), prix));
     }
-    
+
     protected void negociationRefusee(Negociation negociation) {
         negociation.setEtat(Negociation.Etat.REFUSEE);
         float prixN = negociation.getVoeu().getPrix();
@@ -110,10 +124,32 @@ public abstract class Agent extends sma.Agent {
 
         Agent F = negociation.getFournisseur();
         Agent N = negociation.getNegociateur();
-        String message = "Refus de la négociation avec %s (%.2f€ vs %.2f€)";
+        String message = "Refus définitif de la négociation avec %s (%.2f€ vs %.2f€)";
         F.dialogView.addDialogLine(getName(), String.format(message, F.getName(), prixN, prixF));
         N.dialogView.addDialogLine(getName(), String.format(message, N.getName(), prixN, prixF));
     }
+
+    protected void traitementAcceptationPrix(Negociation negociation) {
+        negociation.setEtat(Negociation.Etat.ACCEPTEE);
+        float prix = negociation.getProposition().getPrix();
+        Agent F = negociation.getFournisseur();
+        Agent N = negociation.getNegociateur();
+        String message = "Accord du prix de la négociation n°%d entre %s et %s -> %.2f€";
+        N.dialogView.addDialogLine(getName(), String.format(message, negociation.getId(), F.getName(), N.getName(), prix));
+        F.dialogView.addDialogLine(getName(), String.format(message, negociation.getId(), F.getName(), N.getName(), prix));
+    }
+    
+//    protected void traitementRefusPrix(Negociation negociation) {
+//        negociation.setEtat(Negociation.Etat.REFUSEE);
+//        float prixN = negociation.getVoeu().getPrix();
+//        float prixF = negociation.getProposition().getPrix();
+//
+//        Agent F = negociation.getFournisseur();
+//        Agent N = negociation.getNegociateur();
+//        String message = "Refus du prix de la négociation %d avec %s (%.2f€ vs %.2f€)";
+//        F.dialogView.addDialogLine(getName(), String.format(message, negociation.getId(), F.getName(), prixN, prixF));
+//        N.dialogView.addDialogLine(getName(), String.format(message, negociation.getId(), N.getName(), prixN, prixF));
+//    }
 
     protected void displayMessageReçu(sma.Message message) {
         dialogView.addDialogLine(message.getEmetteur().getName(), message.toString());
